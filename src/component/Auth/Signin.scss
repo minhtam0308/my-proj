@@ -1,0 +1,54 @@
+.Signin-Container {
+    .Signin-header {
+        font-weight: 15px;
+        text-align: right;
+
+        button {
+            margin: 15px;
+            background: #c1cdd7;
+            border: 1px solid;
+            border-radius: 5px;
+
+            &:hover {
+                background-color: wheat
+            }
+        }
+    }
+
+
+    .Signin-Content {
+        margin-top: 100px;
+
+        .tittle {
+            font-size: 25px;
+            text-align: center;
+        }
+
+        .welcom {
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .infor-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+
+        }
+
+        .btn-submit {
+            width: 100%;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            background-color: black;
+            height: 50px;
+        }
+
+        .text-center {
+            cursor: pointer;
+        }
+    }
+
+}

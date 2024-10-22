@@ -6,3 +6,60 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+
+
+.app-container {
+  .Header-contain {
+    .navbar {
+      z-index: 10;
+      // background-color: rgba(0, 0, 0, 0) !important;
+
+      .nav-link {
+        &.active {
+          color: red;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+.btn-signin {
+  background-color: black;
+  margin: 10px;
+
+  &:hover {
+    background-color: rgb(78, 77, 77) !important;
+  }
+}
+
+.btn-login {
+  background-color: white !important;
+  margin: 10px;
+  color: black !important;
+
+
+}
+
+
+.btn-getstart {
+  z-index: 10;
+  background-color: yellow;
+  font-size: 30px;
+  color: white;
+  background-color: black;
+  position: relative;
+  top: 50vh;
+  left: 50vh;
+
+  &:hover {
+    background-color: rgb(78, 77, 77) !important;
+  }
+}
+
+video {
+  width: 100vw;
+  position: fixed;
+  top: 0;
+}

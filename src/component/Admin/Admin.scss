@@ -1,0 +1,54 @@
+// .Menucontain {
+//     background: #13395e !important;
+//     color: white;
+// }
+.admin-container {
+    display: flex;
+
+    .admin-slidebar {
+        height: 100vh;
+    }
+
+    .admin-content {
+        width: 100%;
+
+        .admin-header {}
+
+        .admin-mid {
+            .movePage {
+                display: flex;
+                justify-content: center;
+            }
+        }
+    }
+}
+
+.img-priview {
+
+    height: 200px;
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .pos-img {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #b1aeb1;
+        height: 100%;
+    }
+}
+
+.up {
+    display: flex;
+    align-items: center;
+    border: 1px solid black;
+    width: fit-content;
+    background: azure;
+
+    &:hover {
+        background: #a2b4b4;
+    }
+}
