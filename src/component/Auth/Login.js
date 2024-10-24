@@ -4,9 +4,15 @@ import "./Login.scss"
 import { useNavigate } from "react-router-dom"
 import { postLogin } from "../service/APIrequest"
 
+import { useDispatch } from "react-redux"
 import { toast } from 'react-toastify';
 
+import { accounted_user } from "../../redux/action/userActon"
+
 const Login = () => {
+
+    const disPatch = useDispatch()
+
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const navigate = useNavigate()
@@ -15,6 +21,10 @@ const Login = () => {
         if (res && res.EC === 0) {
             toast.success(res.EM, {
                 toastId: 'success2',
+            })
+            disPatch({
+                type: accounted_user,
+                payload: res
             })
             navigate("/")
         }
