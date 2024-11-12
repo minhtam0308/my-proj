@@ -7,7 +7,7 @@ import { postLogin } from "../service/APIrequest"
 import { useDispatch } from "react-redux"
 import { toast } from 'react-toastify';
 
-import { accounted_user } from "../../redux/action/userActon"
+import { doLog } from "../../redux/action/userActon"
 
 const Login = () => {
 
@@ -22,10 +22,7 @@ const Login = () => {
             toast.success(res.EM, {
                 toastId: 'success2',
             })
-            disPatch({
-                type: accounted_user,
-                payload: res
-            })
+            disPatch(doLog(res))
             navigate("/")
         }
         if (res && res.EC !== 0) {

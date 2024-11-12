@@ -1,9 +1,10 @@
+import ListQuiz from "./ListQuiz";
 
 
 const User = (props) => {
     return (
         <div>
-            user
+            <ListQuiz />
         </div>
     )
 }
