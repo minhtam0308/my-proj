@@ -19,10 +19,19 @@
                 font-weight: 600;
             }
 
+            .a-content {
+                margin: 15px;
+            }
+
             .quiz-btn {
                 display: flex;
                 justify-content: center;
                 gap: 3px;
+            }
+
+            img {
+                width: 300px;
+                height: 200px;
             }
         }
 

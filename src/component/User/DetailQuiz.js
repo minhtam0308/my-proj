@@ -1,23 +1,41 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useParams, useLocation } from "react-router-dom"
 import { getQuizById } from "../service/APIrequest"
 import './DetailQuiz.scss'
 import _ from "lodash"
+import Question from "./Question"
 
 const DetailQuiz = () => {
     const params = useParams()
     const location = useLocation()
     const quizId = params.id
+
+    const [dataQues, setDataQues] = useState([])
+    const [index, setIndex] = useState(0)
+
     useEffect(() => {
-        console.log("check location: ", location)
+        // console.log("check location: ", location)
         fetchDetailQuiz()
     }
         , [quizId])
 
+    const handlerNext = () => {
+        if (index + 1 < dataQues.length) {
+            setIndex(index + 1)
+        }
+        else {
+            alert("qua r")
+        }
+    }
+    const handlerPrev = () => {
+        if (index - 1 < 0) return;
+        setIndex(index - 1)
+    }
+
     const fetchDetailQuiz = async () => {
         const res = await getQuizById(quizId)
-        console.log('check question: ', res)
-        if (res.EC == 0) {
+        // console.log('check question: ', res)
+        if (res.EC === 0) {
             let temp = _.chain(res.DT)
                 // Group the elements of Array based on `id` property
                 .groupBy("id")
@@ -38,7 +56,8 @@ const DetailQuiz = () => {
                 }
                 )
                 .value()
-            console.log("temp ", temp)
+            setDataQues(temp)
+            // console.log("data ques", dataQues)
         }
     }
     return (
@@ -49,15 +68,17 @@ const DetailQuiz = () => {
                 </div>
                 <div className="contain-content">
                     <div className="left-content">
-                        <div className="q-content">
-                            cau 1
-                        </div>
-                        <div className="a-content">
-                            cau 1
-                        </div>
+                        <Question
+                            data={dataQues[index]}
+                            index={index}
+                        />
                         <div className="quiz-btn">
-                            <button className="btn btn-primary">prev</button>
-                            <button className="btn btn-secondary ml-3">next</button>
+                            <button className="btn btn-primary" onClick={() => {
+                                handlerPrev()
+                            }}>prev</button>
+                            <button className="btn btn-secondary ml-3" onClick={() => {
+                                handlerNext()
+                            }}>next</button>
                         </div>
 
                     </div>
