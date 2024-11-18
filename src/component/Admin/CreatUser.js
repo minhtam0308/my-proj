@@ -1,6 +1,6 @@
 
 import ModalCreateUser from "./ModalCreateUser";
-import TableUser from "./tableUser";
+// import TableUser from "./tableUser";
 import { useEffect, useState } from "react";
 import { getUserWithPaginatte, GetallUser } from "../service/APIrequest";
 import ModalUpdateUser from "./ModalUpdateUser";
@@ -71,7 +71,7 @@ const CreatUser = () => {
     }
     return (
         <div className="Create-container">
-            <div className="title">
+            <div className="title" style={{ textAlign: "center", fontSize: "20px", fontWeight: "600" }}>
                 Create User
             </div>
             <div className="Submit-create">

@@ -4,7 +4,7 @@ import SideBar from "./sidebar";
 import { useState } from "react";
 
 import { Outlet } from "react-router-dom";
-
+import PerfectScrollbar from 'react-perfect-scrollbar'
 
 
 
@@ -21,8 +21,10 @@ const Admin = (props) => {
                     <FaBars onClick={() => { return setControlba(!controlbar) }} />
                 </div>
                 <div className="admin-mid">
+                    <PerfectScrollbar>
+                        <Outlet />
+                    </PerfectScrollbar>
 
-                    <Outlet />
                 </div>
 
 

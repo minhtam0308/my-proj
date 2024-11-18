@@ -1,0 +1,49 @@
+.container-manage {
+
+    .title {
+        font-size: 25px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .add-new-quiz {
+        .choose-img {
+            position: relative;
+
+            button {
+                position: absolute;
+                right: 30px;
+                top: 150px;
+                z-index: 5;
+            }
+        }
+
+        .preview {
+            position: relative;
+            height: 200px;
+
+            span {
+                margin-top: 15px;
+                height: 100%;
+                display: flex;
+                text-align: center;
+
+                img {
+                    object-fit: contain;
+                    height: 100%;
+                    width: 100%;
+                }
+            }
+
+            .none {
+                height: 215px;
+            }
+
+
+        }
+    }
+
+    .table-manage-quiz {
+        margin-top: 10px;
+    }
+}

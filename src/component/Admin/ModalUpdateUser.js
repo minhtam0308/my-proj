@@ -62,7 +62,7 @@ const ModalUpdateUser = (props) => {
 
         if (res && res.EC === 0) {
             await props.fetchGetUserWithPageinatte(props.currentPage)
-            await handleClose()
+            handleClose()
             toast.success(res.EM, {
                 toastId: 'success1'
             })
