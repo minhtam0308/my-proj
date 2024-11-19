@@ -2,29 +2,54 @@ import './Questions.scss'
 import Select from 'react-select';
 import { FaRegMinusSquare, FaRegPlusSquare } from "react-icons/fa";
 import { RiImageAddLine } from "react-icons/ri";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import _, { every } from 'lodash'
-
+import _ from 'lodash'
+import Lightbox from "react-awesome-lightbox";
+import "react-awesome-lightbox/build/style.css";
+import { getQuizToManage, postAnsWithIdQuesForQuiz, postQuesForQuiz } from '../../service/APIrequest';
+import { toast } from 'react-toastify';
 
 const Questions = () => {
-
-
-    const [dataAddQues, setDataAddQues] = useState([{
+    const initQues = [{
         id: uuidv4(),
-        description: "question 1",
+        description: "",
         imageFile: '',
         imageName: '',
         answer: [
             {
                 id: uuidv4(),
-                description: 'answer 1',
+                description: '',
                 isCheck: false
             }
         ]
     }
-    ])
+    ]
 
+
+    const [dataAddQues, setDataAddQues] = useState(initQues)
+    const [viewImage, setViewImage] = useState("")
+    const [listQuiz, setListQuiz] = useState([])
+    const [quizSelect, setQuizSelect] = useState()
+    const [idEmpty, setIdEmpty] = useState("")
+
+    useEffect(() => {
+        getAllDataQuizManage()
+    }, [])
+
+    const getAllDataQuizManage = async () => {
+        const res = await getQuizToManage()
+        if (res && res.EC === 0) {
+            let temp = res.DT.map((item) => {
+                return ({
+                    value: item.id,
+                    label: `${item.id} - ${item.name} - ${item.description}`
+                })
+
+            })
+            setListQuiz(temp)
+        }
+    }
 
 
 
@@ -119,17 +144,80 @@ const Questions = () => {
         }
     }
 
-    const saveChange = () => {
-        console.log(dataAddQues)
+    const saveChange = async () => {
+        // postQuesForQuiz = (quiz_id, description, questionImage) 
+        // postAnsWithIdQuesForQuiz = (description, correct_answer, question_id) 
+        // khong the trinh tu
+        //submit question
+        // await Promise.all(dataAddQues.map(async (question) => {
+        //     const resQues = await postQuesForQuiz(+quizSelect.value, question.description, question.imageFile)
+        //     //submit ans
+        //     await Promise.all(question.answer.map(async (answer) => {
+        //         const resAns = await postAnsWithIdQuesForQuiz(answer.description, answer.isCheck, resQues.DT.id)
+        //     }))
+        // }))
+
+
+        //validate quiz
+        if (!quizSelect) {
+            toast.error(`Please choose the quiz`)
+            return;
+        }
+
+        //validate Ques ans
+
+
+        for (let i = 0; i < dataAddQues.length; i++) {
+            let countAns = 0
+            if (!dataAddQues[i].description) {
+                toast.error(`Empty question at Question ${i + 1}`)
+                setIdEmpty(dataAddQues[i].id)
+                return;
+            }
+            for (let j = 0; j < dataAddQues[i].answer.length; j++) {
+                if (!dataAddQues[i].answer[j].description) {
+                    toast.error(`Empty answer at Question ${i + 1} and answer ${j + 1}`)
+                    setIdEmpty(dataAddQues[i].answer[j].id)
+                    return;
+                }
+                if (dataAddQues[i].answer[j].isCheck) {
+                    countAns++;
+                }
+            }
+            if (countAns === 0) {
+                toast.error(`Please choose answer correct in question ${i + 1}`)
+                setIdEmpty(dataAddQues[i].id)
+                return
+            }
+            setIdEmpty()
+        }
+
+
+        // theo trinh tu
+        for (const question of dataAddQues) {
+            const resQues = await postQuesForQuiz(+quizSelect.value, question.description, question.imageFile)
+            for (const answer of question.answer) {
+                const resAns = await postAnsWithIdQuesForQuiz(answer.description, answer.isCheck, resQues.DT.id)
+            }
+        }
+        setDataAddQues(initQues)
+
     }
+
+
 
     return (
         <div className="questions-container">
             <div className="title">
                 Manage Questions
             </div>
-            <div className='select-quiz'>
+            <div className='select-quiz form-group col-6' >
                 <Select
+                    options={listQuiz}
+                    defaultValue={quizSelect}
+                    // value={listQuiz[0]}
+                    onChange={setQuizSelect}
+
 
                 />
             </div>
@@ -143,14 +231,19 @@ const Questions = () => {
                                 <input
 
                                     type="text"
-                                    className="form-control inp-des"
+                                    className={idEmpty && question.id === idEmpty
+                                        ?
+                                        "form-control inp-des is-invalid"
+                                        :
+                                        "form-control inp-des"
+                                    }
                                     placeholder="Password"
                                     value={question.description}
                                     onChange={(event) => {
                                         handlerChangeQues(question.id, event.target.value)
                                     }}
                                 />
-                                <label>Questions {indexques + 1}'s description</label>
+                                <label style={{ zIndex: 0 }}>Questions {indexques + 1}'s description</label>
                             </div>
                             <div className="col-md-14 px-1 up">
 
@@ -161,7 +254,12 @@ const Questions = () => {
 
 
                             </div>
-                            <span>{question.imageName ? question.imageName : 'have no image'}</span>
+                            <div style={{ width: "150px" }}>{question.imageName ?
+                                <span onClick={() => {
+                                    setViewImage(question.imageFile)
+                                }}>{question.imageName}</span>
+                                :
+                                'have no image'}</div>
                             <div className='control'>
                                 <span
 
@@ -195,14 +293,18 @@ const Questions = () => {
                                         <input
 
                                             type="text"
-                                            className="form-control inp-des"
+                                            className={idEmpty && answer.id === idEmpty
+                                                ?
+                                                "form-control inp-des is-invalid"
+                                                :
+                                                "form-control inp-des"}
                                             placeholder="Password"
                                             value={answer.description}
                                             onChange={(event) => {
                                                 handeleChangeAnsCheck('ANS', question.id, answer.id, event)
                                             }}
                                         />
-                                        <label>Answer {indexAns + 1}</label>
+                                        <label style={{ zIndex: 0 }}>Answer {indexAns + 1}</label>
                                     </div>
 
                                     <div className='control'>
@@ -231,9 +333,13 @@ const Questions = () => {
                 })}
 
             </div>
+
             <div className='saveChange'>
                 <button className='btn btn-warning' onClick={saveChange}>Save Change</button>
             </div>
+            {viewImage &&
+                <Lightbox image={URL.createObjectURL(viewImage)} title={viewImage.name} onClose={() => setViewImage("")}></Lightbox>
+            }
         </div>
     )
 }
