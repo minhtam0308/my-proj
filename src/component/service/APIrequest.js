@@ -100,12 +100,30 @@ const postAnsWithIdQuesForQuiz = (description, correct_answer, question_id) => {
     })
 }
 
+const getQAbyIdQuizManage = (id) => {
+    return axios.get(`api/v1/quiz-with-qa/${id}`)
+}
+
+const postUpsertQAWithQuiz = (quizId, questions) => {
+    return axios.post(`api/v1/quiz-upsert-qa`, {
+        quizId, questions
+    })
+}
+
+//gan quiz cho 1 user
+const postAssignQuizToUser = (quizId, userId) => {
+    return axios.post(`api/v1/quiz-assign-to-user`, {
+        quizId, userId
+    })
+}
+
 export {
     APIservice, GetallUser, putUpdateUser, DeleteUser,
     getUserWithPaginatte, postLogin, postSignin,
     getListQuiz, getQuizById, postSubmitAnswer, postAddQuiz,
     getQuizToManage, putUpdateQuiz, delQuiz, postQuesForQuiz,
-    postAnsWithIdQuesForQuiz
+    postAnsWithIdQuesForQuiz, getQAbyIdQuizManage, postUpsertQAWithQuiz,
+    postAssignQuizToUser
 
 };
 

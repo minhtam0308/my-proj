@@ -7,7 +7,11 @@ import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash'
 import Lightbox from "react-awesome-lightbox";
 import "react-awesome-lightbox/build/style.css";
-import { getQuizToManage, postAnsWithIdQuesForQuiz, postQuesForQuiz } from '../../service/APIrequest';
+import {
+    getQAbyIdQuizManage, getQuizToManage,
+    postAnsWithIdQuesForQuiz, postQuesForQuiz,
+    postUpsertQAWithQuiz
+} from '../../service/APIrequest';
 import { toast } from 'react-toastify';
 
 const Questions = () => {
@@ -16,11 +20,11 @@ const Questions = () => {
         description: "",
         imageFile: '',
         imageName: '',
-        answer: [
+        answers: [
             {
                 id: uuidv4(),
                 description: '',
-                isCheck: false
+                isCorrect: false
             }
         ]
     }
@@ -32,6 +36,7 @@ const Questions = () => {
     const [listQuiz, setListQuiz] = useState([])
     const [quizSelect, setQuizSelect] = useState()
     const [idEmpty, setIdEmpty] = useState("")
+    const [checkNew, setCheckNew] = useState(false)
 
     useEffect(() => {
         getAllDataQuizManage()
@@ -51,7 +56,25 @@ const Questions = () => {
         }
     }
 
+    useEffect(() => {
+        fetchQAbyIdQuiz()
+    }, [quizSelect])
 
+    const fetchQAbyIdQuiz = async () => {
+        if (quizSelect && quizSelect.value) {
+            const res = await getQAbyIdQuizManage(quizSelect.value)
+            if (_.isEmpty(res.DT.qa)) {
+                setDataAddQues(initQues)
+                setCheckNew(true)
+            } else {
+                setDataAddQues(res.DT.qa)
+                setCheckNew(false)
+            }
+            // console.log(res)
+        }
+        // console.log("chay")
+
+    }
 
     const handleAddRemoveQues = (key, id) => {
         // console.log('check ', key, id)
@@ -61,11 +84,11 @@ const Questions = () => {
                 description: "",
                 imageFile: '',
                 imageName: '',
-                answer: [
+                answers: [
                     {
                         id: uuidv4(),
                         description: '',
-                        isCheck: false
+                        isCorrect: false
                     }
                 ]
             }
@@ -86,18 +109,18 @@ const Questions = () => {
             {
                 id: uuidv4(),
                 description: '',
-                isCheck: false
+                isCorrect: false
             }
             let temp = _.cloneDeep(dataAddQues)
             let index = temp.findIndex(iteam => iteam.id === quesID)
-            temp[index].answer.push(newans)
+            temp[index].answers.push(newans)
             setDataAddQues(temp)
 
         }
         if (key === 'REMOVE') {
             let temp = _.cloneDeep(dataAddQues)
             let index = temp.findIndex(iteam => iteam.id === quesID)
-            temp[index].answer = temp[index].answer.filter(item => item.id !== ansID)
+            temp[index].answers = temp[index].answers.filter(item => item.id !== ansID)
             setDataAddQues(temp)
         }
     }
@@ -128,13 +151,13 @@ const Questions = () => {
         let index = temp.findIndex(iteam => iteam.id === quesId)
         if (index > -1 && event && event.target.value) {
             // console.log(event.target.files[0])
-            temp[index].answer = temp[index].answer.map((item) => {
+            temp[index].answers = temp[index].answers.map((item) => {
                 if (item.id === ansId) {
                     if (key === 'ANS') {
                         item.description = event.target.value
                     }
                     else if (key === 'CHECKBOX') {
-                        item.isCheck = event.target.checked
+                        item.isCorrect = event.target.checked
                     }
                 }
                 return item
@@ -153,7 +176,7 @@ const Questions = () => {
         //     const resQues = await postQuesForQuiz(+quizSelect.value, question.description, question.imageFile)
         //     //submit ans
         //     await Promise.all(question.answer.map(async (answer) => {
-        //         const resAns = await postAnsWithIdQuesForQuiz(answer.description, answer.isCheck, resQues.DT.id)
+        //         const resAns = await postAnsWithIdQuesForQuiz(answer.description, answer.isCorrect, resQues.DT.id)
         //     }))
         // }))
 
@@ -174,13 +197,13 @@ const Questions = () => {
                 setIdEmpty(dataAddQues[i].id)
                 return;
             }
-            for (let j = 0; j < dataAddQues[i].answer.length; j++) {
-                if (!dataAddQues[i].answer[j].description) {
+            for (let j = 0; j < dataAddQues[i].answers.length; j++) {
+                if (!dataAddQues[i].answers[j].description) {
                     toast.error(`Empty answer at Question ${i + 1} and answer ${j + 1}`)
-                    setIdEmpty(dataAddQues[i].answer[j].id)
+                    setIdEmpty(dataAddQues[i].answers[j].id)
                     return;
                 }
-                if (dataAddQues[i].answer[j].isCheck) {
+                if (dataAddQues[i].answers[j].isCorrect) {
                     countAns++;
                 }
             }
@@ -193,19 +216,39 @@ const Questions = () => {
         }
 
 
-        // theo trinh tu
-        for (const question of dataAddQues) {
-            const resQues = await postQuesForQuiz(+quizSelect.value, question.description, question.imageFile)
-            for (const answer of question.answer) {
-                const resAns = await postAnsWithIdQuesForQuiz(answer.description, answer.isCheck, resQues.DT.id)
+
+        // theo trinh tu chi tao them cau hoi luc dau
+        if (checkNew) {
+            for (const question of dataAddQues) {
+                const resQues = await postQuesForQuiz(+quizSelect.value, question.description, question.imageFile)
+                for (const answer of question.answers) {
+                    const resAns = await postAnsWithIdQuesForQuiz(answer.description, answer.isCorrect, resQues.DT.id)
+                }
             }
+            toast.success('create questions success')
+            fetchQAbyIdQuiz()
         }
-        setDataAddQues(initQues)
+        else {
+
+            //update, sua, xoa duoc cau hoi khong co them luc moi dau
+            const res = await postUpsertQAWithQuiz(quizSelect.value, dataAddQues)
+            if (res && res.EC === 0) {
+                toast.success(res.EM)
+            } else {
+                toast.error(res.EM)
+            }
+            fetchQAbyIdQuiz()
+        }
+
+
+
+
+
 
     }
 
 
-
+    // console.log(dataAddQues)
     return (
         <div className="questions-container">
             <div className="title">
@@ -280,10 +323,10 @@ const Questions = () => {
                             </div>
 
                         </div>
-                        {question.answer && question.answer.map((answer, indexAns) => {
+                        {question.answers && question.answers.map((answer, indexAns) => {
                             return (
                                 <div key={`contenta ${answer.id}`} className='ans-content'>
-                                    <input className="form-check-input check-ans" type="checkbox" checked={answer.isCheck} onChange={
+                                    <input className="form-check-input check-ans" type="checkbox" checked={answer.isCorrect} onChange={
                                         (event) => {
                                             handeleChangeAnsCheck('CHECKBOX', question.id, answer.id, event)
                                         }
@@ -315,7 +358,7 @@ const Questions = () => {
                                             }}>
                                             <FaRegPlusSquare color='green' />
                                         </span>
-                                        {question.answer.length > 1 &&
+                                        {question.answers.length > 1 &&
                                             <span
 
                                                 onClick={() => {

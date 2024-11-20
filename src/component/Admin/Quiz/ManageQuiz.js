@@ -6,6 +6,7 @@ import { getQuizToManage, postAddQuiz } from "../../service/APIrequest";
 import { toast } from 'react-toastify';
 import { Accordion } from "react-bootstrap";
 import TableManageQuiz from "./TableManageQuiz";
+import AsignQuiz from "./AsignQuiz";
 
 
 
@@ -143,13 +144,27 @@ const ManageQuiz = () => {
                             </div>
                         </Accordion.Body>
                     </Accordion.Item>
+                    <Accordion.Item eventKey="1">
+                        <Accordion.Header>Table Quiz</Accordion.Header>
+                        <Accordion.Body>
+
+                            <TableManageQuiz
+                                dataQuizManage={dataQuizManage}
+                                getAllDataQuizManage={getAllDataQuizManage}
+
+                            />
+                        </Accordion.Body>
+                    </Accordion.Item>
+                    <Accordion.Item eventKey="2">
+                        <Accordion.Header>Asign Quiz</Accordion.Header>
+                        <Accordion.Body>
+                            <AsignQuiz
+                                dataQuizManage={dataQuizManage}
+                            />
+                        </Accordion.Body>
+                    </Accordion.Item>
                 </Accordion>
 
-                <TableManageQuiz
-                    dataQuizManage={dataQuizManage}
-                    getAllDataQuizManage={getAllDataQuizManage}
-
-                />
 
 
             </div>
